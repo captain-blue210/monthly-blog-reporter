@@ -1,12 +1,12 @@
-import { App, ExpressReceiver } from '@slack/bolt';
-import * as functions from 'firebase-functions';
-import { useMonthlyBlogReportCommand } from './commands/monthly';
+import { App, ExpressReceiver } from "@slack/bolt";
+import * as functions from "firebase-functions";
+import { useMonthlyBlogReportCommand } from "./commands/monthly";
 
 const config = functions.config();
 
 export const expressReceiver = new ExpressReceiver({
   signingSecret: config.slack.secret,
-  endpoints: '/events',
+  endpoints: "/events",
   processBeforeResponse: true,
 });
 
