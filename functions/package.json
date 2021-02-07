@@ -1,0 +1,37 @@
+{
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "fix": "eslint --fix"
+  },
+  "engines": {
+    "node": "12"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@slack/bolt": "^3.1.1",
+    "firebase-admin": "^9.2.0",
+    "firebase-functions": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^7.2.6",
+    "@types/prettier": "^2.2.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "eslint": "^7.6.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "firebase-functions-test": "^0.2.0",
+    "prettier": "^2.2.1",
+    "typescript": "^3.8.0"
+  },
+  "private": true
+}
