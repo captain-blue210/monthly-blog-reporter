@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "monthly-blog-reporter-f4f0b"
+    "prod": "monthly-blog-reporter-prod",
+    "staging": "monthly-blog-reporter-f4f0b"
   }
 }
