@@ -3,14 +3,28 @@ import { Article, NoteArticles } from "../types/note-types";
 
 const BASE_URL = "https://note.com/api/v2/creators";
 
-export const getNoteArticles = async (userId: string): Promise<string[]> => {
+export const getNoteArticleUrlsOfMonth = async (
+  userId: string | null
+): Promise<string> => {
+  if (!userId) {
+    return "noteのユーザーIDは登録されていません。";
+  }
+
   const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
+  const monthNum = new Date().getMonth() + 1;
+  const month =
+    monthNum.toString().length === 1
+      ? `0${monthNum.toString()}`
+      : monthNum.toString();
+
   const url = `${BASE_URL}/${userId}/contents?kind=note&publish_on=${year}-${month}&disabled_pinned=true`;
 
   const response = await axios.get<NoteArticles>(url);
   const urlList: string[] = response.data.data.contents.map(
     (item: Article) => item.noteUrl
   );
-  return urlList;
+
+  return urlList.length > 0
+    ? urlList.join("\n")
+    : `${monthNum}月に書いたnoteの記事はありませんでした。`;
 };

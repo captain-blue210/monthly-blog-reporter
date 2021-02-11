@@ -4,7 +4,7 @@ import { useMonthlyBlogReportCommand } from "./commands/monthly";
 
 const config = functions.config();
 
-export const expressReceiver = new ExpressReceiver({
+const expressReceiver = new ExpressReceiver({
   signingSecret: config.slack.secret,
   endpoints: "/events",
   processBeforeResponse: true,
@@ -13,6 +13,11 @@ export const expressReceiver = new ExpressReceiver({
 const app = new App({
   receiver: expressReceiver,
   token: config.slack.token,
+  processBeforeResponse: true,
 });
 
 useMonthlyBlogReportCommand(app);
+
+export const slack = functions
+  .region("asia-northeast1")
+  .https.onRequest(expressReceiver.app);

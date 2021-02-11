@@ -4,7 +4,13 @@ import { ZennArticles } from "../types/zenn-types";
 
 const BASE_URL = "https://api.zenn.dev/articles?username=";
 
-export const getZennArticles = async (userId: string): Promise<string[]> => {
+export const getZennArticleUrlsOfMonth = async (
+  userId: string | null
+): Promise<string> => {
+  if (!userId) {
+    return "ZennのユーザーIDは登録されていません。";
+  }
+
   const url = `${BASE_URL}${userId}`;
   const firstDayOfMonth: Date = getFirstDayOfMonth(new Date());
   const lastDayOfMonth: Date = getLastDayOfMonth(new Date());
@@ -18,5 +24,8 @@ export const getZennArticles = async (userId: string): Promise<string[]> => {
     .map(
       (item) => `https://zenn.dev/${item.user.username}/articles/${item.slug}`
     );
-  return urlList;
+
+  return urlList.length > 0
+    ? urlList.join("\n")
+    : `${new Date().getMonth() + 1}月に書いたZennの記事はありませんでした。`;
 };

@@ -4,7 +4,13 @@ import { Item } from "../types/qiita-types";
 
 const BASE_URL = "https://qiita.com/api/v2/users/";
 
-export const getQiitaArticles = async (userId: string): Promise<string[]> => {
+export const getQiitaArticleUrlsOfMonth = async (
+  userId: string | null
+): Promise<string> => {
+  if (!userId) {
+    return "QiitaのユーザーIDは登録されていません。";
+  }
+
   const url = `${BASE_URL}/${userId}/items`;
   const firstDayOfMonth = getFirstDayOfMonth(new Date());
   const lastDayOfMonth = getLastDayOfMonth(new Date());
@@ -16,5 +22,8 @@ export const getQiitaArticles = async (userId: string): Promise<string[]> => {
       return createdAt >= firstDayOfMonth && createdAt < lastDayOfMonth;
     })
     .map((item) => item.url);
-  return urlList;
+
+  return urlList.length > 0
+    ? urlList.join("\n")
+    : `${new Date().getMonth() + 1}月に書いたQiitaの記事はありませんでした。`;
 };

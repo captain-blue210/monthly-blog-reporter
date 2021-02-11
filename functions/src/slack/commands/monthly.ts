@@ -1,16 +1,35 @@
 import { App } from "@slack/bolt";
+import * as admin from "firebase-admin";
+import { firestore } from "firebase-admin";
 import * as funcitons from "firebase-functions";
-import { getNoteArticles } from "../../blog/note-client";
-import { getQiitaArticles } from "../../blog/qiita-client";
-import { getZennArticles } from "../../blog/zenn-client";
 
 const VIEW_ID = "monthly";
 
 const config = funcitons.config();
+const db = admin.initializeApp().firestore();
 
-export const useMonthlyBlogReportCommand = (app: App) => {
+export const useMonthlyBlogReportCommand = (app: App): void => {
   app.command("/monthly", async ({ ack, body, context, command }) => {
-    ack();
+    await ack();
+
+    const snapshot = await db
+      .collection("blog-ids")
+      .where("slackUserId", "==", body.user_id)
+      .orderBy("createdAt", "desc")
+      .limit(1)
+      .get();
+
+    const blogIds = {
+      qiitaUserId: "",
+      zennUserId: "",
+      noteUserId: "",
+    };
+
+    snapshot.forEach((doc) => {
+      blogIds.qiitaUserId = doc.data().qiitaUserId;
+      blogIds.zennUserId = doc.data().zennUserId;
+      blogIds.noteUserId = doc.data().noteUserId;
+    });
 
     try {
       await app.client.views.open({
@@ -35,6 +54,7 @@ export const useMonthlyBlogReportCommand = (app: App) => {
                   type: "plain_text",
                   text: "QiitaユーザーID（@を除く）",
                 },
+                initial_value: blogIds.qiitaUserId,
               },
               label: {
                 type: "plain_text",
@@ -53,6 +73,7 @@ export const useMonthlyBlogReportCommand = (app: App) => {
                   type: "plain_text",
                   text: "ZennユーザーID（@を除く）",
                 },
+                initial_value: blogIds.zennUserId,
               },
               label: {
                 type: "plain_text",
@@ -71,6 +92,7 @@ export const useMonthlyBlogReportCommand = (app: App) => {
                   type: "plain_text",
                   text: "noteユーザーID（@を除く）",
                 },
+                initial_value: blogIds.noteUserId,
               },
               label: {
                 type: "plain_text",
@@ -94,16 +116,16 @@ export const useMonthlyBlogReportCommand = (app: App) => {
     } catch (error) {
       console.log(error);
       await app.client.chat.postEphemeral({
-        token: config.slack.bot_token,
+        token: config.slack.token,
         channel: body.channel_id,
-        user: body.user.id,
+        user: body.user_id,
         text:
           "モーダル表示時にエラーが発生しました。アプリ管理者に問い合わせてください。",
       });
     }
   });
 
-  app.view(VIEW_ID, async ({ ack, context, view, body }) => {
+  app.view(VIEW_ID, async ({ ack, view, body }) => {
     await ack();
 
     const channelId = view.private_metadata;
@@ -112,83 +134,18 @@ export const useMonthlyBlogReportCommand = (app: App) => {
     const noteUserId = view.state.values.note.note_user_id.value;
 
     try {
-      const qiitaArticles: string[] = await getQiitaArticles(qiitaUserId);
-      const zennArticles: string[] = await getZennArticles(zennUserId);
-      const noteArticles: string[] = await getNoteArticles(noteUserId);
-
-      await app.client.chat.postMessage({
-        token: context.conte,
-        channel: channelId,
-        text: "",
-        blocks: [
-          {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: "月に書いた記事URL一覧",
-              emoji: true,
-            },
-          },
-          {
-            type: "divider",
-          },
-          {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: "Qiita",
-              emoji: true,
-            },
-          },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: qiitaArticles.join("\n"),
-            },
-          },
-          {
-            type: "divider",
-          },
-          {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: "Zenn",
-              emoji: true,
-            },
-          },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: zennArticles.join("\n"),
-            },
-          },
-          {
-            type: "divider",
-          },
-          {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: "note",
-              emoji: true,
-            },
-          },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: noteArticles.join("\n"),
-            },
-          },
-        ],
+      await db.collection("blog-ids").add({
+        slackUserId: body.user.id,
+        slackChannelId: channelId,
+        qiitaUserId: qiitaUserId,
+        zennUserId: zennUserId,
+        noteUserId: noteUserId,
+        createdAt: firestore.FieldValue.serverTimestamp(),
       });
     } catch (error) {
       console.log(error);
       await app.client.chat.postEphemeral({
-        token: config.slack.bot_token,
+        token: config.slack.token,
         channel: channelId,
         user: body.user.id,
         text:

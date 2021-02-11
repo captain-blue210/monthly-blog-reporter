@@ -55,11 +55,11 @@ export interface Article {
   twitterShareUrl: string;
   facebookShareUrl: string;
   lineShareUrl: string;
-  audio: any;
-  pictures: any[];
+  audio: unknown;
+  pictures: unknown[];
   limitedMessage: string | null;
   labels: string[] | [];
-  priorSale: any | null;
+  priorSale: unknown | null;
   canMultipleLimitedNote: boolean;
   hasEmbeddedContent: boolean;
   isPinned: boolean;
@@ -71,7 +71,7 @@ export interface Article {
   isProfiled: boolean;
   isForWork: boolean;
   isCircleDescription: boolean;
-  noteDraft: any | null;
+  noteDraft: unknown | null;
   noteUrl: string;
 }
 
