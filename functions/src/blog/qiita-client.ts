@@ -12,18 +12,19 @@ export const getQiitaArticleUrlsOfMonth = async (
   }
 
   const url = `${BASE_URL}/${userId}/items`;
-  const firstDayOfMonth = getFirstDayOfMonth(new Date());
-  const lastDayOfMonth = getLastDayOfMonth(new Date());
+  const now = new Date();
+  const firstDayOfMonth = getFirstDayOfMonth(now);
+  const lastDayOfMonth = getLastDayOfMonth(now);
 
   const response = await axios.get<Item[]>(url);
   const urlList: string[] = response.data
     .filter((item) => {
       const createdAt: Date = new Date(item.created_at);
-      return createdAt >= firstDayOfMonth && createdAt < lastDayOfMonth;
+      return createdAt >= firstDayOfMonth && createdAt <= lastDayOfMonth;
     })
     .map((item) => item.url);
 
   return urlList.length > 0
     ? urlList.join("\n")
-    : `${new Date().getMonth() + 1}月に書いたQiitaの記事はありませんでした。`;
+    : `${now.getMonth() + 1}月に書いたQiitaの記事はありませんでした。`;
 };

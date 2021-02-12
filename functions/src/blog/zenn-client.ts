@@ -12,14 +12,15 @@ export const getZennArticleUrlsOfMonth = async (
   }
 
   const url = `${BASE_URL}${userId}`;
-  const firstDayOfMonth: Date = getFirstDayOfMonth(new Date());
-  const lastDayOfMonth: Date = getLastDayOfMonth(new Date());
+  const now = new Date();
+  const firstDayOfMonth = getFirstDayOfMonth(now);
+  const lastDayOfMonth = getLastDayOfMonth(now);
 
   const response = await axios.get<ZennArticles>(url);
   const urlList: string[] = response.data.articles
     .filter((item) => {
       const publishedAt: Date = new Date(item.published_at);
-      return publishedAt >= firstDayOfMonth && publishedAt < lastDayOfMonth;
+      return publishedAt >= firstDayOfMonth && publishedAt <= lastDayOfMonth;
     })
     .map(
       (item) => `https://zenn.dev/${item.user.username}/articles/${item.slug}`
@@ -27,5 +28,5 @@ export const getZennArticleUrlsOfMonth = async (
 
   return urlList.length > 0
     ? urlList.join("\n")
-    : `${new Date().getMonth() + 1}月に書いたZennの記事はありませんでした。`;
+    : `${now.getMonth() + 1}月に書いたZennの記事はありませんでした。`;
 };
