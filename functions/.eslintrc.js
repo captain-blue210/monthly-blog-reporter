@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     es6: true,
     node: true,
@@ -15,8 +16,9 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    ecmaVersion: 2018,
     sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.dev.json"],
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
@@ -24,5 +26,6 @@ module.exports = {
   plugins: ["@typescript-eslint", "import"],
   rules: {
     quotes: ["error", "double"],
+    "import/prefer-default-export": "off",
   },
 };
