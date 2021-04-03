@@ -24,9 +24,18 @@ export const onCreate = functions
     const data: BlogIds = snapshot.data() as BlogIds;
 
     try {
-      const qiitaUrls = await getQiitaArticleUrlsOfMonth(data.qiitaUserId);
-      const zennUrls = await getZennArticleUrlsOfMonth(data.zennUserId);
-      const noteUrls = await getNoteArticleUrlsOfMonth(data.noteUserId);
+      const qiitaUrls = await getQiitaArticleUrlsOfMonth(
+        data.qiitaUserId,
+        data.month,
+      );
+      const zennUrls = await getZennArticleUrlsOfMonth(
+        data.zennUserId,
+        data.month,
+      );
+      const noteUrls = await getNoteArticleUrlsOfMonth(
+        data.noteUserId,
+        data.month,
+      );
 
       await app.client.chat.postMessage({
         token: config.slack.token,
@@ -37,7 +46,7 @@ export const onCreate = functions
             type: "header",
             text: {
               type: "plain_text",
-              text: `${new Date().getMonth() + 1}月に書いた記事URL一覧`,
+              text: `${data.month}月に書いた記事URL一覧`,
               emoji: true,
             },
           },

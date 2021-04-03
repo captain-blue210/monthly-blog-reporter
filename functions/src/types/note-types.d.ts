@@ -35,7 +35,7 @@ export interface Article {
       {
         name: string;
         body: string;
-      }
+      },
     ];
   };
   isRefund: boolean;
@@ -50,7 +50,7 @@ export interface Article {
       hashtag: {
         name: string;
       };
-    }
+    },
   ];
   twitterShareUrl: string;
   facebookShareUrl: string;

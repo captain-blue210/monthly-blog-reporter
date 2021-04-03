@@ -5,16 +5,16 @@ import { Item } from "../types/qiita-types";
 const BASE_URL = "https://qiita.com/api/v2/users/";
 
 export const getQiitaArticleUrlsOfMonth = async (
-  userId: string | null
+  userId: string | null,
+  month: string,
 ): Promise<string> => {
   if (!userId) {
     return "QiitaのユーザーIDは登録されていません。";
   }
 
   const url = `${BASE_URL}/${userId}/items`;
-  const now = new Date();
-  const firstDayOfMonth = getFirstDayOfMonth(now);
-  const lastDayOfMonth = getLastDayOfMonth(now);
+  const firstDayOfMonth = getFirstDayOfMonth(month);
+  const lastDayOfMonth = getLastDayOfMonth(month);
 
   const response = await axios.get<Item[]>(url);
   const urlList: string[] = response.data
@@ -26,5 +26,5 @@ export const getQiitaArticleUrlsOfMonth = async (
 
   return urlList.length > 0
     ? urlList.join("\n")
-    : `${now.getMonth() + 1}月に書いたQiitaの記事はありませんでした。`;
+    : `${month}月に書いたQiitaの記事はありませんでした。`;
 };

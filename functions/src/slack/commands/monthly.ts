@@ -100,6 +100,108 @@ export const useMonthlyBlogReportCommand = (app: App): void => {
                 emoji: true,
               },
             },
+            {
+              type: "input",
+              block_id: "month",
+              element: {
+                action_id: "month_id",
+                type: "static_select",
+                placeholder: {
+                  type: "plain_text",
+                  text: "月を選択",
+                },
+                options: [
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "1月",
+                    },
+                    value: "1",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "2月",
+                    },
+                    value: "2",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "3月",
+                    },
+                    value: "3",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "4月",
+                    },
+                    value: "4",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "5月",
+                    },
+                    value: "5",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "6月",
+                    },
+                    value: "6",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "7月",
+                    },
+                    value: "7",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "8月",
+                    },
+                    value: "8",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "9月",
+                    },
+                    value: "9",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "10月",
+                    },
+                    value: "10",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "11月",
+                    },
+                    value: "11",
+                  },
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "12月",
+                    },
+                    value: "12",
+                  },
+                ],
+              },
+              label: {
+                type: "plain_text",
+                text: "記事一覧を取得したい月を入力してください",
+              },
+            },
           ],
           private_metadata: command.channel_id,
           submit: {
@@ -132,6 +234,7 @@ export const useMonthlyBlogReportCommand = (app: App): void => {
     const qiitaUserId = view.state.values.qiita.qiita_user_id.value;
     const zennUserId = view.state.values.zenn.zenn_user_id.value;
     const noteUserId = view.state.values.note.note_user_id.value;
+    const month = view.state.values.month.month_id.selected_option.value;
 
     try {
       await db.collection("blog-ids").add({
@@ -140,6 +243,7 @@ export const useMonthlyBlogReportCommand = (app: App): void => {
         qiitaUserId: qiitaUserId,
         zennUserId: zennUserId,
         noteUserId: noteUserId,
+        month: month,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
     } catch (error) {
@@ -149,7 +253,7 @@ export const useMonthlyBlogReportCommand = (app: App): void => {
         channel: channelId,
         user: body.user.id,
         text:
-          "データ表示時にエラーが発生しました。アプリ管理者に問い合わせてください。",
+          "データ登録時にエラーが発生しました。アプリ管理者に問い合わせてください。",
       });
     }
   });

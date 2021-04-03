@@ -6,5 +6,6 @@ export type BlogIds = {
   qiitaUserId: string | null;
   zennUserId: string | null;
   noteUserId: string | null;
+  month: string;
   createdAt: firestore.Timestamp;
 };
