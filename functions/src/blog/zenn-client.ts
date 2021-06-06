@@ -2,7 +2,6 @@ import * as playwright from "playwright-aws-lambda";
 
 const options = {
   headless: true,
-  args: ["--no-sandbox"],
 };
 
 const BASE_URL = "https://zenn.dev";
@@ -41,7 +40,6 @@ export const getZennArticleUrlsOfMonth = async (
     }
   }
 
-  console.log("---start zenn scraping---");
   const args = { BASE_URL, month };
   const result = await page.$$eval(
     "article",
@@ -80,22 +78,9 @@ export const getZennArticleUrlsOfMonth = async (
         .map((ref) => `${args.BASE_URL}${ref}`),
     args,
   );
-  console.log(result);
   browser?.close();
+
   return result.length > 0
     ? result.join("\n")
     : `${month}月に書いたZennの記事はありませんでした。`;
-  // const url = `${BASE_URL}${userId}`;
-  // const firstDayOfMonth = getFirstDayOfMonth(month);
-  // const lastDayOfMonth = getLastDayOfMonth(month);
-
-  // const response = await axios.get<ZennArticles>(url);
-  // const urlList: string[] = response.data.articles
-  //   .filter((item) => {
-  //     const publishedAt: Date = new Date(item.published_at);
-  //     return publishedAt >= firstDayOfMonth && publishedAt <= lastDayOfMonth;
-  //   })
-  //   .map(
-  //     (item) => `https://zenn.dev/${item.user.username}/articles/${item.slug}`,
-  //   );
 };
